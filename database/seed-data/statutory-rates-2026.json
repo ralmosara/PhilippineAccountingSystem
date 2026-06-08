@@ -1,0 +1,61 @@
+{
+    "_meta": {
+        "year": "2026",
+        "source": "SSS Circular 2024-006 (effective Jan 2025+); PhilHealth Circular 2024 (5% rate, capped at ₱100k); HDMF Circular (2% + 2%); BIR RR 8-2018 (TRAIN Law brackets)",
+        "notes": "Rates are illustrative for the demo; update against the live circulars before production payroll."
+    },
+    "sss": {
+        "effective_from": "2025-01-01",
+        "msc_floor":    "5000.00",
+        "msc_ceiling": "35000.00",
+        "_format": "Each bracket: [floor, ceiling, ee_amount, er_amount] computed from 14% (4.5% EE / 9.5% ER) of the MSC midpoint.",
+        "brackets": [
+            { "msc_floor":  "5000.00", "msc_ceiling":  "5249.99", "ee_amount":   "225.00", "er_amount":   "475.00" },
+            { "msc_floor":  "5250.00", "msc_ceiling":  "5749.99", "ee_amount":   "247.50", "er_amount":   "522.50" },
+            { "msc_floor":  "5750.00", "msc_ceiling":  "6249.99", "ee_amount":   "270.00", "er_amount":   "570.00" },
+            { "msc_floor": "10000.00", "msc_ceiling": "10499.99", "ee_amount":   "450.00", "er_amount":   "950.00" },
+            { "msc_floor": "15000.00", "msc_ceiling": "15499.99", "ee_amount":   "675.00", "er_amount":  "1425.00" },
+            { "msc_floor": "20000.00", "msc_ceiling": "20499.99", "ee_amount":   "900.00", "er_amount":  "1900.00" },
+            { "msc_floor": "25000.00", "msc_ceiling": "25499.99", "ee_amount":  "1125.00", "er_amount":  "2375.00" },
+            { "msc_floor": "30000.00", "msc_ceiling": "30499.99", "ee_amount":  "1350.00", "er_amount":  "2850.00" },
+            { "msc_floor": "35000.00", "msc_ceiling": "999999.99","ee_amount":  "1575.00", "er_amount":  "3325.00" }
+        ]
+    },
+    "philhealth": {
+        "effective_from": "2024-01-01",
+        "premium_rate":  "0.0500",
+        "salary_floor": "10000.00",
+        "salary_ceiling": "100000.00"
+    },
+    "pagibig": {
+        "effective_from": "2024-02-01",
+        "ee_rate_low":  "0.0100",
+        "ee_rate_high": "0.0200",
+        "er_rate":      "0.0200",
+        "low_threshold": "1500.00",
+        "salary_cap":  "10000.00"
+    },
+    "bir_tax_table_monthly": {
+        "effective_from": "2023-01-01",
+        "_format": "TRAIN Law brackets for monthly payroll (annual brackets ÷ 12). Floor inclusive, ceiling inclusive.",
+        "brackets": [
+            { "floor":        "0.00", "ceiling":  "20833.00", "base_tax":      "0.00", "rate": "0.0000" },
+            { "floor":    "20834.00", "ceiling":  "33332.00", "base_tax":      "0.00", "rate": "0.1500" },
+            { "floor":    "33333.00", "ceiling":  "66666.00", "base_tax":   "1875.00", "rate": "0.2000" },
+            { "floor":    "66667.00", "ceiling": "166666.00", "base_tax":   "8541.80", "rate": "0.2500" },
+            { "floor":   "166667.00", "ceiling": "666666.00", "base_tax":  "33541.80", "rate": "0.3000" },
+            { "floor":   "666667.00", "ceiling":         null, "base_tax": "183541.80", "rate": "0.3500" }
+        ]
+    },
+    "bir_tax_table_semimonthly": {
+        "effective_from": "2023-01-01",
+        "brackets": [
+            { "floor":        "0.00", "ceiling":  "10417.00", "base_tax":     "0.00", "rate": "0.0000" },
+            { "floor":    "10417.00", "ceiling":  "16666.00", "base_tax":     "0.00", "rate": "0.1500" },
+            { "floor":    "16667.00", "ceiling":  "33332.00", "base_tax":   "937.50", "rate": "0.2000" },
+            { "floor":    "33333.00", "ceiling":  "83332.00", "base_tax":  "4270.70", "rate": "0.2500" },
+            { "floor":    "83333.00", "ceiling": "333332.00", "base_tax": "16770.70", "rate": "0.3000" },
+            { "floor":   "333333.00", "ceiling":         null, "base_tax": "91770.70", "rate": "0.3500" }
+        ]
+    }
+}

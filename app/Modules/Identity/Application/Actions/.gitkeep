@@ -1,0 +1,1 @@
+Stub Action classes (CreateUser, UpdateUser, DeleteUser, EnableMfa, ConfirmMfa) will be implemented in Phase 0 close-out. Their interfaces are referenced from the controllers; this folder marker keeps the directory in version control while we wire migrations and seeders first.

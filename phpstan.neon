@@ -1,0 +1,23 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+
+    paths:
+        - app/
+
+    excludePaths:
+        - app/Modules/*/database/migrations/*
+
+    ignoreErrors:
+        # Spatie Permission's HasRoles trait adds dynamic methods that PHPStan can't infer
+        - '#Call to an undefined method.+\\UserModel::hasRole#'
+        - '#Call to an undefined method.+\\UserModel::can#'
+
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false
+
+    # Enforce DDD module boundaries — Infrastructure may not be imported from Application
+    # (rule defined in tests/Architecture; this is a static-analysis backstop)

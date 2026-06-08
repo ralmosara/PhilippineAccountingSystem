@@ -1,0 +1,12 @@
+/**
+ * Sample route — dashboard. Demonstrates the file-route pattern the
+ * migration documented in frontend/docs/router-migration.md will follow.
+ * Not active yet; src/app/router.tsx still owns navigation.
+ */
+import { createFileRoute } from '@tanstack/react-router';
+
+import { DashboardPage } from '@/modules/dashboard/pages/DashboardPage';
+
+export const Route = createFileRoute('/')({
+    component: DashboardPage,
+});

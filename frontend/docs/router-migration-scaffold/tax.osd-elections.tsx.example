@@ -1,0 +1,19 @@
+/**
+ * Sample route — OSD Elections. Demonstrates beforeLoad-based permission
+ * gating, which replaces the imperative RouteGuard check in the current
+ * hash router. When migration completes, this pattern repeats for ~21 pages.
+ */
+import { createFileRoute, redirect } from '@tanstack/react-router';
+
+import { OsdElectionsPage } from '@/modules/tax/pages/OsdElectionsPage';
+import { hasPermission, useAuthStore } from '@/shared/lib/auth-store';
+
+export const Route = createFileRoute('/tax/osd-elections')({
+    beforeLoad: () => {
+        const user = useAuthStore.getState().user;
+        if (!hasPermission(user, 'tax.osd_election.view')) {
+            throw redirect({ to: '/' });
+        }
+    },
+    component: OsdElectionsPage,
+});

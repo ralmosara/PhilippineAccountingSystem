@@ -1,0 +1,75 @@
+# --- Dependencies ----------------------------------------------------------
+/vendor
+/node_modules
+/frontend/node_modules
+/frontend/dist
+
+# --- Environment -----------------------------------------------------------
+.env
+.env.backup
+.env.production
+.env.encrypted
+.env.*.encrypted
+.phpunit.result.cache
+.phpunit.cache
+
+# --- Laravel ---------------------------------------------------------------
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/storage/framework/cache/data
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/storage/logs
+/storage/app/public
+/storage/app/bir
+/storage/app/livewire-tmp
+/bootstrap/cache/*.php
+/bootstrap/ssr
+
+# --- Build artifacts -------------------------------------------------------
+/coverage
+/.phpunit.cache
+/auth.json
+/clover.xml
+/coverage.xml
+/junit.xml
+
+# --- IDE / OS --------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.cache
+
+# --- Laravel Sail / Homestead ----------------------------------------------
+Homestead.json
+Homestead.yaml
+.vagrant
+yarn-error.log
+npm-debug.log
+
+# --- Tools -----------------------------------------------------------------
+.phpstan.cache
+.php-cs-fixer.cache
+.pint.cache
+
+# --- Docker volumes (host-mounted) -----------------------------------------
+/docker/postgres/data
+/docker/redis/data
+/docker/minio/data
+
+# --- Generated docs --------------------------------------------------------
+/docs/database/rendered/
+/docs/api/
+
+# --- Secrets / certs -------------------------------------------------------
+/storage/certs/*.p12
+/storage/certs/*.pem
+/storage/certs/*.key
+*.pfx

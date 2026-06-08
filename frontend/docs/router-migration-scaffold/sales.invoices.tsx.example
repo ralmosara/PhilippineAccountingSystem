@@ -1,0 +1,20 @@
+/**
+ * Sample route — Sales Invoices list. Demonstrates the index pattern (no
+ * path params) under a deeper namespace. When migration completes the
+ * file naming `sales.invoices.tsx` (or `sales/invoices/index.tsx` in
+ * directory form) maps to the URL `/sales/invoices`.
+ */
+import { createFileRoute, redirect } from '@tanstack/react-router';
+
+import { SalesInvoicesPage } from '@/modules/sales/pages/SalesInvoicesPage';
+import { hasPermission, useAuthStore } from '@/shared/lib/auth-store';
+
+export const Route = createFileRoute('/sales/invoices')({
+    beforeLoad: () => {
+        const user = useAuthStore.getState().user;
+        if (!hasPermission(user, 'sales.invoices.view')) {
+            throw redirect({ to: '/' });
+        }
+    },
+    component: SalesInvoicesPage,
+});

@@ -1,0 +1,214 @@
+# =============================================================================
+# Philippine Accounting System (PHA) — Docker Compose
+# =============================================================================
+# Brings up the complete dev stack:
+#   - app       : Laravel 11 on FrankenPHP (Octane worker mode)
+#   - horizon   : Laravel Horizon queue worker
+#   - postgres  : PostgreSQL 16 (initialized via docker/postgres/init.sql)
+#   - redis     : Redis 7 (cache, queues, sessions, locks)
+#   - minio     : S3-compatible object storage (PDFs, BIR XML, attachments)
+#   - mailpit   : SMTP catcher for dev (UI at http://localhost:8025)
+#   - vite      : React 18 dev server with HMR
+#
+# Usage:
+#   docker compose up -d
+#   docker compose exec app php artisan pha:install
+# =============================================================================
+
+name: pha
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+      args:
+        PHP_VERSION: "8.3"
+    image: pha/app:dev
+    container_name: pha-app
+    restart: unless-stopped
+    command: php artisan octane:frankenphp --host=0.0.0.0 --port=8000 --workers=2 --max-requests=500
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: accountingdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: Mypass123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MINIO_ENDPOINT: http://minio:9000
+    volumes:
+      - .:/app
+      - app-vendor:/app/vendor
+      - app-storage:/app/storage
+      - ./docker/app/php.ini:/usr/local/etc/php/conf.d/zz-pha.ini:ro
+    ports:
+      - "8000:8000"
+    networks:
+      - pha-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  horizon:
+    image: pha/app:dev
+    container_name: pha-horizon
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    command: php artisan horizon
+    healthcheck:
+      disable: true
+    environment:
+      APP_ENV: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: accountingdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: Mypass123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - .:/app
+      - app-vendor:/app/vendor
+      - app-storage:/app/storage
+      - ./docker/app/php.ini:/usr/local/etc/php/conf.d/zz-pha.ini:ro
+    networks:
+      - pha-net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: pha-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: Mypass123
+      POSTGRES_DB: accountingdb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - pha-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d accountingdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "work_mem=8MB"
+
+  redis:
+    image: redis:7-alpine
+    container_name: pha-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - pha-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: pha-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    networks:
+      - pha-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: pha-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint:
+      - sh
+      - -c
+      - |
+        mc alias set local http://minio:9000 minioadmin minioadmin &&
+        mc mb -p local/pha-documents || true &&
+        mc mb -p local/pha-bir || true &&
+        mc mb -p local/pha-backups || true &&
+        echo 'MinIO buckets ready: pha-documents, pha-bir, pha-backups'
+    networks:
+      - pha-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: pha-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - pha-net
+
+  vite:
+    image: node:20-alpine
+    container_name: pha-vite
+    working_dir: /frontend
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    volumes:
+      - ./frontend:/frontend
+      - frontend-node-modules:/frontend/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - pha-net
+    profiles:
+      - frontend
+
+networks:
+  pha-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  app-vendor:
+  app-storage:
+  frontend-node-modules:

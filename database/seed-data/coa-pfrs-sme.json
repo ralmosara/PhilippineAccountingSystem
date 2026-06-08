@@ -1,0 +1,105 @@
+{
+    "_meta": {
+        "framework": "PFRS for SMEs (with Philippine adaptations)",
+        "currency": "PHP",
+        "format": "Each row: code, name, type, normal_balance, parent_code (null = root), is_postable, pfrs_classification"
+    },
+    "accounts": [
+        { "code": "1000",     "name": "ASSETS",                                "type": "asset",      "normal_balance": "debit",  "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "1100",     "name": "Current Assets",                        "type": "asset",      "normal_balance": "debit",  "parent_code": "1000",   "is_postable": false, "pfrs_classification": "current_asset" },
+        { "code": "1110",     "name": "Cash and Cash Equivalents",             "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": false, "pfrs_classification": "current_asset" },
+        { "code": "1110-001", "name": "Petty Cash Fund",                       "type": "asset",      "normal_balance": "debit",  "parent_code": "1110",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1110-002", "name": "Cash on Hand",                          "type": "asset",      "normal_balance": "debit",  "parent_code": "1110",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1110-003", "name": "Cash in Bank — BPI",                    "type": "asset",      "normal_balance": "debit",  "parent_code": "1110",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1110-004", "name": "Cash in Bank — BDO",                    "type": "asset",      "normal_balance": "debit",  "parent_code": "1110",   "is_postable": true,  "pfrs_classification": "current_asset" },
+
+        { "code": "1120",     "name": "Trade and Other Receivables",           "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": false, "pfrs_classification": "current_asset" },
+        { "code": "1120-001", "name": "Accounts Receivable — Trade",           "type": "asset",      "normal_balance": "debit",  "parent_code": "1120",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1120-002", "name": "Allowance for Doubtful Accounts",       "type": "contra_asset","normal_balance": "credit","parent_code": "1120",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1120-003", "name": "Notes Receivable",                      "type": "asset",      "normal_balance": "debit",  "parent_code": "1120",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1120-004", "name": "Advances to Employees",                 "type": "asset",      "normal_balance": "debit",  "parent_code": "1120",   "is_postable": true,  "pfrs_classification": "current_asset" },
+
+        { "code": "1130",     "name": "Inventory",                             "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": false, "pfrs_classification": "current_asset" },
+        { "code": "1130-001", "name": "Merchandise Inventory",                 "type": "asset",      "normal_balance": "debit",  "parent_code": "1130",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1130-002", "name": "Raw Materials",                         "type": "asset",      "normal_balance": "debit",  "parent_code": "1130",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1130-003", "name": "Work in Process",                       "type": "asset",      "normal_balance": "debit",  "parent_code": "1130",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1130-004", "name": "Finished Goods",                        "type": "asset",      "normal_balance": "debit",  "parent_code": "1130",   "is_postable": true,  "pfrs_classification": "current_asset" },
+
+        { "code": "1140",     "name": "Prepaid Expenses",                      "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1150",     "name": "Input VAT",                             "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": true,  "pfrs_classification": "current_asset" },
+        { "code": "1160",     "name": "Creditable Withholding Tax",            "type": "asset",      "normal_balance": "debit",  "parent_code": "1100",   "is_postable": true,  "pfrs_classification": "current_asset" },
+
+        { "code": "1200",     "name": "Non-Current Assets",                    "type": "asset",      "normal_balance": "debit",  "parent_code": "1000",   "is_postable": false, "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210",     "name": "Property, Plant and Equipment",         "type": "asset",      "normal_balance": "debit",  "parent_code": "1200",   "is_postable": false, "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-001", "name": "Land",                                  "type": "asset",      "normal_balance": "debit",  "parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-002", "name": "Building",                              "type": "asset",      "normal_balance": "debit",  "parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-003", "name": "Office Equipment",                      "type": "asset",      "normal_balance": "debit",  "parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-004", "name": "Furniture and Fixtures",                "type": "asset",      "normal_balance": "debit",  "parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-005", "name": "Transportation Equipment",              "type": "asset",      "normal_balance": "debit",  "parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-091", "name": "Accumulated Depreciation — Building",   "type": "contra_asset","normal_balance": "credit","parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+        { "code": "1210-092", "name": "Accumulated Depreciation — Equipment",  "type": "contra_asset","normal_balance": "credit","parent_code": "1210",   "is_postable": true,  "pfrs_classification": "noncurrent_asset" },
+
+        { "code": "2000",     "name": "LIABILITIES",                           "type": "liability",  "normal_balance": "credit", "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "2100",     "name": "Current Liabilities",                   "type": "liability",  "normal_balance": "credit", "parent_code": "2000",   "is_postable": false, "pfrs_classification": "current_liability" },
+        { "code": "2110",     "name": "Accounts Payable — Trade",              "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2120",     "name": "Output VAT",                            "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2120-001", "name": "VAT Payable",                           "type": "liability",  "normal_balance": "credit", "parent_code": "2120",   "is_postable": true,  "pfrs_classification": "current_liability" },
+
+        { "code": "2130",     "name": "Withholding Tax Payable",               "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": false, "pfrs_classification": "current_liability" },
+        { "code": "2130-001", "name": "WT-Compensation (1601-C)",              "type": "liability",  "normal_balance": "credit", "parent_code": "2130",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2130-002", "name": "Expanded Withholding Tax (1601-EQ)",    "type": "liability",  "normal_balance": "credit", "parent_code": "2130",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2130-003", "name": "Final Withholding Tax (1601-FQ)",       "type": "liability",  "normal_balance": "credit", "parent_code": "2130",   "is_postable": true,  "pfrs_classification": "current_liability" },
+
+        { "code": "2140",     "name": "Statutory Payable",                     "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": false, "pfrs_classification": "current_liability" },
+        { "code": "2140-001", "name": "SSS Payable",                           "type": "liability",  "normal_balance": "credit", "parent_code": "2140",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2140-002", "name": "PhilHealth Payable",                    "type": "liability",  "normal_balance": "credit", "parent_code": "2140",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2140-003", "name": "Pag-IBIG Payable",                      "type": "liability",  "normal_balance": "credit", "parent_code": "2140",   "is_postable": true,  "pfrs_classification": "current_liability" },
+
+        { "code": "2150",     "name": "Income Tax Payable",                    "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2160",     "name": "Accrued Expenses",                      "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": true,  "pfrs_classification": "current_liability" },
+        { "code": "2170",     "name": "Salaries Payable",                      "type": "liability",  "normal_balance": "credit", "parent_code": "2100",   "is_postable": true,  "pfrs_classification": "current_liability" },
+
+        { "code": "2200",     "name": "Non-Current Liabilities",               "type": "liability",  "normal_balance": "credit", "parent_code": "2000",   "is_postable": false, "pfrs_classification": "noncurrent_liability" },
+        { "code": "2210",     "name": "Loans Payable — Long-term",             "type": "liability",  "normal_balance": "credit", "parent_code": "2200",   "is_postable": true,  "pfrs_classification": "noncurrent_liability" },
+
+        { "code": "3000",     "name": "EQUITY",                                "type": "equity",     "normal_balance": "credit", "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "3100",     "name": "Share Capital",                         "type": "equity",     "normal_balance": "credit", "parent_code": "3000",   "is_postable": true,  "pfrs_classification": "equity" },
+        { "code": "3200",     "name": "Retained Earnings",                     "type": "equity",     "normal_balance": "credit", "parent_code": "3000",   "is_postable": true,  "pfrs_classification": "equity" },
+        { "code": "3300",     "name": "Current Year Earnings",                 "type": "equity",     "normal_balance": "credit", "parent_code": "3000",   "is_postable": true,  "pfrs_classification": "equity" },
+
+        { "code": "4000",     "name": "REVENUE",                               "type": "revenue",    "normal_balance": "credit", "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "4100",     "name": "Sales",                                 "type": "revenue",    "normal_balance": "credit", "parent_code": "4000",   "is_postable": false, "pfrs_classification": "operating_revenue" },
+        { "code": "4100-001", "name": "Sales — Vatable",                       "type": "revenue",    "normal_balance": "credit", "parent_code": "4100",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4100-002", "name": "Sales — Zero-Rated",                    "type": "revenue",    "normal_balance": "credit", "parent_code": "4100",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4100-003", "name": "Sales — Exempt",                        "type": "revenue",    "normal_balance": "credit", "parent_code": "4100",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4100-091", "name": "Sales Returns and Allowances",          "type": "revenue",    "normal_balance": "debit",  "parent_code": "4100",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4100-092", "name": "Sales Discounts",                       "type": "revenue",    "normal_balance": "debit",  "parent_code": "4100",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4200",     "name": "Service Revenue",                       "type": "revenue",    "normal_balance": "credit", "parent_code": "4000",   "is_postable": true,  "pfrs_classification": "operating_revenue" },
+        { "code": "4300",     "name": "Other Income",                          "type": "revenue",    "normal_balance": "credit", "parent_code": "4000",   "is_postable": true,  "pfrs_classification": "other_income" },
+
+        { "code": "5000",     "name": "COST OF SALES",                         "type": "expense",    "normal_balance": "debit",  "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "5100",     "name": "Cost of Goods Sold",                    "type": "expense",    "normal_balance": "debit",  "parent_code": "5000",   "is_postable": true,  "pfrs_classification": "cost_of_sales" },
+        { "code": "5200",     "name": "Cost of Services",                      "type": "expense",    "normal_balance": "debit",  "parent_code": "5000",   "is_postable": true,  "pfrs_classification": "cost_of_sales" },
+
+        { "code": "6000",     "name": "OPERATING EXPENSES",                    "type": "expense",    "normal_balance": "debit",  "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "6100",     "name": "Salaries and Wages",                    "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6110",     "name": "Employee Benefits",                     "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6120",     "name": "SSS / PhilHealth / Pag-IBIG (Employer)","type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6200",     "name": "Rent Expense",                          "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6300",     "name": "Utilities Expense",                     "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6400",     "name": "Office Supplies",                       "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6500",     "name": "Depreciation Expense",                  "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6600",     "name": "Communication Expense",                 "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6700",     "name": "Transportation",                        "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6800",     "name": "Professional Fees",                     "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+        { "code": "6900",     "name": "Taxes and Licenses",                    "type": "expense",    "normal_balance": "debit",  "parent_code": "6000",   "is_postable": true,  "pfrs_classification": "operating_expense" },
+
+        { "code": "7000",     "name": "OTHER INCOME / EXPENSES",               "type": "expense",    "normal_balance": "debit",  "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "7100",     "name": "Interest Income",                       "type": "revenue",    "normal_balance": "credit", "parent_code": "7000",   "is_postable": true,  "pfrs_classification": "other_income" },
+        { "code": "7200",     "name": "Interest Expense",                      "type": "expense",    "normal_balance": "debit",  "parent_code": "7000",   "is_postable": true,  "pfrs_classification": "finance_cost" },
+        { "code": "7300",     "name": "Foreign Exchange Gain / Loss",          "type": "expense",    "normal_balance": "debit",  "parent_code": "7000",   "is_postable": true,  "pfrs_classification": "other_expense" },
+
+        { "code": "8000",     "name": "INCOME TAX",                            "type": "expense",    "normal_balance": "debit",  "parent_code": null,     "is_postable": false, "pfrs_classification": null },
+        { "code": "8100",     "name": "Income Tax Expense",                    "type": "expense",    "normal_balance": "debit",  "parent_code": "8000",   "is_postable": true,  "pfrs_classification": "income_tax" }
+    ]
+}

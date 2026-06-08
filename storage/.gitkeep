@@ -1,0 +1,6 @@
+Laravel storage tree. Created by post-create-project script:
+- storage/framework/cache/data
+- storage/framework/sessions
+- storage/framework/views
+- storage/logs
+- storage/app/{public,bir,certs}

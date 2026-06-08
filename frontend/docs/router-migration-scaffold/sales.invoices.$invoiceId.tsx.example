@@ -1,0 +1,30 @@
+/**
+ * Sample route — Sales Invoice detail. Demonstrates the typed-param pattern:
+ *   - filename uses `$invoiceId` to mark a path segment as a parameter
+ *   - `useParams()` returns `{ invoiceId: string }` (typed) at usage
+ *   - migration replaces the hand-rolled regex matchers in app/router.tsx
+ *
+ * Loaders can run here too — e.g. prefetch the invoice via TanStack Query
+ * so the page never shows a "loading…" flash on click:
+ *
+ *   loader: ({ params, context }) => context.queryClient.prefetchQuery(...)
+ */
+import { createFileRoute, redirect, useParams } from '@tanstack/react-router';
+
+import { SalesInvoiceDetailPage } from '@/modules/sales/pages/SalesInvoiceDetailPage';
+import { hasPermission, useAuthStore } from '@/shared/lib/auth-store';
+
+export const Route = createFileRoute('/sales/invoices/$invoiceId')({
+    beforeLoad: () => {
+        const user = useAuthStore.getState().user;
+        if (!hasPermission(user, 'sales.invoices.view')) {
+            throw redirect({ to: '/' });
+        }
+    },
+    component: InvoiceDetailRoute,
+});
+
+function InvoiceDetailRoute() {
+    const { invoiceId } = useParams({ from: '/sales/invoices/$invoiceId' });
+    return <SalesInvoiceDetailPage invoiceId={invoiceId} />;
+}

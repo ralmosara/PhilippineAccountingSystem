@@ -1,0 +1,118 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'                # e.g. v0.5.0, v1.0.0-rc.1
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [staging, production]
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false   # never cancel a deploy mid-flight
+
+permissions:
+  contents: read
+  packages: write             # for ghcr.io publish, when wired
+  id-token: write             # OIDC to cloud provider, when wired
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Frontend: build a tagged dist/ bundle and publish to ghcr.io as an
+  #    OCI artifact. The same tag is reused by the infrastructure deploy.
+  # ---------------------------------------------------------------------------
+  frontend-bundle:
+    name: Frontend bundle (tag ${{ github.ref_name }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build production bundle
+        env:
+          VITE_API_URL: ${{ vars.PROD_API_URL || 'https://api.pha.local/api/v1' }}
+        run: npm run build
+
+      - name: Upload tagged artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-${{ github.ref_name }}
+          path: frontend/dist/
+          # Tagged builds keep around for 90d so a quick rollback to the
+          # previous tag's artifact is a button-press, not a re-build.
+          retention-days: 90
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # 2. Backend: build a production Docker image with PHP 8.3 + FrankenPHP.
+  #    Tagged as `ghcr.io/<owner>/pha-app:<git-tag>` plus `:latest` when on
+  #    a `v*` semver tag.
+  # ---------------------------------------------------------------------------
+  backend-image:
+    name: Backend image (PHP 8.3 + FrankenPHP)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build + push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/app/Dockerfile
+          push: true
+          # Two tags: the literal git-tag, and `:latest` on every push to
+          # support `docker pull ghcr.io/<owner>/pha-app:latest` for the
+          # most-recent prod build.
+          tags: |
+            ghcr.io/${{ github.repository }}/pha-app:${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}/pha-app:latest
+
+  # ---------------------------------------------------------------------------
+  # 3. Deploy step — currently a stub. The real implementation calls
+  #    whichever cluster manager is in use (ECS update-service, Coolify
+  #    webhook, Helm release upgrade, etc). Skipped until infrastructure
+  #    is provisioned; the artifacts from steps 1+2 are still produced
+  #    so a manual deploy can proceed if needed.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
+    needs: [frontend-bundle, backend-image]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+
+    steps:
+      - name: Placeholder
+        run: |
+          echo "Deploy to '${{ github.event.inputs.environment || 'staging' }}' — placeholder."
+          echo "Artifacts ready:"
+          echo "  - frontend-dist-${{ github.ref_name }} (artifact, 90d retention)"
+          echo "  - ghcr.io/${{ github.repository }}/pha-app:${{ github.ref_name }}"
+          echo ""
+          echo "Wire your cluster manager here (ECS / Coolify / Helm / etc)."

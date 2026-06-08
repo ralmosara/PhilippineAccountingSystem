@@ -1,0 +1,141 @@
+name: Docs — render Mermaid ERDs + drift check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/database/**.md'
+      - 'database/migrations/**.php'
+  pull_request:
+    paths:
+      - 'database/migrations/**.php'
+      - 'docs/database/**.md'
+  workflow_dispatch:
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Render Mermaid ERD .md files to PNG and commit. Runs on main only.
+  # ---------------------------------------------------------------------------
+  render:
+    name: Render ERDs to PNG
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with: { node-version: '20' }
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Render every ERD file
+        run: |
+          mkdir -p docs/database/rendered
+          for f in docs/database/erd*.md; do
+              name=$(basename "$f" .md)
+              mmdc -i "$f" -o "docs/database/rendered/${name}.png" -w 2400 -H 1800 -b transparent || true
+          done
+
+      - name: Commit rendered images
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'docs: re-render ERD images'
+          file_pattern: docs/database/rendered/*.png
+
+  # ---------------------------------------------------------------------------
+  # 2. ERD drift check — compares the schema produced by `php artisan migrate`
+  #    against the tables documented in docs/database/erd*.md. Fails the PR
+  #    if a migration adds/changes a table that isn't in the ERD.
+  # ---------------------------------------------------------------------------
+  drift:
+    name: ERD drift vs migrations
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: Mypass123
+          POSTGRES_DB: pha_erd_drift
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, pdo_pgsql, pgsql
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Apply init.sql + run migrations
+        env:
+          PGPASSWORD: Mypass123
+        run: |
+          psql -h localhost -U postgres -d pha_erd_drift -f docker/postgres/init.sql
+          cp .env.example .env
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=pha_erd_drift/' .env
+          php artisan key:generate
+          php artisan migrate --force
+
+      - name: Extract table list from live DB
+        env:
+          PGPASSWORD: Mypass123
+        run: |
+          psql -h localhost -U postgres -d pha_erd_drift -At \
+              -c "SELECT schemaname || '.' || tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog','information_schema','public') ORDER BY 1" \
+              > /tmp/live-tables.txt
+          echo "Live tables: $(wc -l < /tmp/live-tables.txt)"
+
+      - name: Extract table list referenced in ERD docs
+        run: |
+          # Match every TABLE_NAME { ... } block inside Mermaid erDiagram fences;
+          # the captured name is uppercase-snake-case which lc()'s to the
+          # live-DB lowercase tablename.
+          grep -rEoh '^[[:space:]]+([A-Z][A-Z_0-9]+)[[:space:]]*\{' docs/database/erd*.md \
+              | sed 's/[[:space:]]*{[[:space:]]*//' \
+              | tr 'A-Z' 'a-z' \
+              | sort -u \
+              > /tmp/doc-tables.txt
+          echo "Documented tables: $(wc -l < /tmp/doc-tables.txt)"
+
+      - name: Diff live vs doc + fail on regression
+        run: |
+          # Strip schema prefixes from live list (ERD uses unqualified names)
+          awk -F. '{ print $NF }' /tmp/live-tables.txt | sort -u > /tmp/live-tables-bare.txt
+
+          # Tables in the live DB but missing from any ERD doc
+          comm -23 /tmp/live-tables-bare.txt /tmp/doc-tables.txt > /tmp/undocumented.txt
+          # Tables in the ERD but no migration creates them
+          comm -13 /tmp/live-tables-bare.txt /tmp/doc-tables.txt > /tmp/orphaned-in-erd.txt
+
+          fail=0
+          if [ -s /tmp/undocumented.txt ]; then
+              echo "::error::ERD drift — these tables exist in migrations but are NOT documented in docs/database/erd*.md:"
+              sed 's/^/  - /' /tmp/undocumented.txt
+              fail=1
+          fi
+          if [ -s /tmp/orphaned-in-erd.txt ]; then
+              echo "::warning::ERD references tables not created by any migration (likely a typo or future-planned table):"
+              sed 's/^/  - /' /tmp/orphaned-in-erd.txt
+          fi
+
+          if [ "$fail" = "1" ]; then
+              echo ""
+              echo "Fix: update the per-schema ERD in docs/database/ to include the new table."
+              exit 1
+          fi
+          echo "✓ ERDs in sync with migrations."

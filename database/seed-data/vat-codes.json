@@ -1,0 +1,19 @@
+{
+    "_meta": {
+        "source": "BIR — Tax Code (NIRC) and revenue regulations",
+        "regulations": ["RR 16-2005", "RR 13-2018", "RA 10963 (TRAIN)", "RR 8-2022 (EIS)"]
+    },
+    "codes": [
+        { "code": "VAT-12",         "name": "VAT Output 12%",                    "rate": 0.12,  "kind": "vat_output",  "effective_from": "2018-01-01", "description": "Standard VAT on sale of goods, properties, services. NIRC Sec. 106-108." },
+        { "code": "VAT-IN-12",      "name": "VAT Input 12%",                     "rate": 0.12,  "kind": "vat_input",   "effective_from": "2018-01-01", "description": "Creditable input VAT on purchases of goods/services." },
+        { "code": "VAT-IN-DEFER",   "name": "VAT Input — Deferred (Capital)",    "rate": 0.12,  "kind": "vat_input",   "effective_from": "2018-01-01", "description": "Capital goods ≥ ₱1M: input VAT amortized over 60 months. NIRC Sec. 110(A)." },
+        { "code": "VAT-0",          "name": "VAT Zero-Rated",                    "rate": 0.00,  "kind": "vat_zero",    "effective_from": "2018-01-01", "description": "Export sales, sales to PEZA, etc. NIRC Sec. 106(A)(2)." },
+        { "code": "VAT-EX",         "name": "VAT Exempt",                        "rate": 0.00,  "kind": "vat_exempt",  "effective_from": "2018-01-01", "description": "Senior citizen / PWD discount, agricultural products in original state, etc. NIRC Sec. 109." },
+        { "code": "VAT-WHELD-GOV",  "name": "VAT Withheld — Government Sales",   "rate": 0.05,  "kind": "vat_output",  "effective_from": "2018-01-01", "description": "Final 5% VAT withheld by government on payments to suppliers. NIRC Sec. 114(C)." },
+
+        { "code": "PT-3",           "name": "Percentage Tax — 3%",               "rate": 0.03,  "kind": "percentage",  "effective_from": "2018-01-01", "description": "Non-VAT taxpayers on gross sales/receipts. NIRC Sec. 116. (Reduced to 1% July 2020 — Jun 2023 by RA 11534 CREATE.)" },
+        { "code": "PT-1",           "name": "Percentage Tax — 1% (CREATE)",      "rate": 0.01,  "kind": "percentage",  "effective_from": "2020-07-01", "effective_to": "2023-06-30", "description": "RA 11534 CREATE Act temporary rate." },
+
+        { "code": "EX-FUEL",        "name": "Excise — Petroleum",                "rate": 0.00,  "kind": "excise",      "effective_from": "2018-01-01", "description": "Per-liter excise tax on petroleum products. Computed by volume; rate varies by product." }
+    ]
+}

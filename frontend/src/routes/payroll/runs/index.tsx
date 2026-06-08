@@ -1,0 +1,13 @@
+import { createFileRoute, redirect } from '@tanstack/react-router';
+
+import { PayrollRunsPage } from '@/modules/payroll/pages/PayrollRunsPage';
+import { hasPermission, useAuthStore } from '@/shared/lib/auth-store';
+
+export const Route = createFileRoute('/payroll/runs/')({
+    beforeLoad: () => {
+        if (!hasPermission(useAuthStore.getState().user, 'payroll.runs.view')) {
+            throw redirect({ to: '/' });
+        }
+    },
+    component: PayrollRunsPage,
+});
